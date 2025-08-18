@@ -1,0 +1,63 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pdb
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+*.manifest
+*.spec
+
+# Virtual environments
+.venv/
+env/
+venv/
+ENV/
+*.env
+*.venv
+
+# Django stuff
+*.log
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+static/
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*.bak
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# MyPy / Type checker
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pytest / Coverage
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+.tox/
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# Other
+*.tmp
