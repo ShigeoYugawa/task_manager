@@ -1,0 +1,19 @@
+<!-- task_manager/tasks/templates/tasks/task_confirm_delete.html -->
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>タスク削除</title>
+</head>
+<body>
+    <h1>タスク削除確認</h1>
+    <p>「{{ task.title }}」を本当に削除しますか？</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">削除</button>
+    </form>
+    <a href="{% url 'tasks:task_detail' task.pk %}">キャンセル</a>
+</body>
+</html>

@@ -1,0 +1,24 @@
+<!-- task_manager/tasks/templates/tasks/task_detail.html -->
+ 
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ task.title }}</title>
+</head>
+<body>
+    <h1>{{ task.title }}</h1>
+    <p>{{ task.description }}</p>
+    <p>作成日: {{ task.created_at }}</p>
+    <p>更新日: {{ task.updated_at }}</p>
+    <p>状態: {% if task.is_completed %}完了{% else %}未完了{% endif %}</p>
+    {% if task.completed_comment %}
+        <p>完了コメント: {{ task.completed_comment }}</p>
+    {% endif %}
+    <p>アーカイブ: {{ task.is_archived }}</p>
+
+    <a href="{% url 'tasks:task_update' task.pk %}">編集</a> |
+    <a href="{% url 'tasks:task_delete' task.pk %}">削除</a> |
+    <a href="{% url 'tasks:task_list' %}">一覧へ戻る</a>
+</body>
+</html>
