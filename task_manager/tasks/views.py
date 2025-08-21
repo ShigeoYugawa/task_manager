@@ -7,7 +7,7 @@ from .models import Task
 from .forms import TaskForm
 
 
-def task_list(request):
+def task_list(request: HttpRequest) -> HttpResponse:
     """
     タスク一覧表示
     - フィルター: is_completed, is_archived
