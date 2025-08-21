@@ -2,6 +2,7 @@
 
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
+from django.db.models import Q
 from .models import Task
 from .forms import TaskForm
 
@@ -12,6 +13,11 @@ def task_list(request):
     - フィルター: is_completed, is_archived
     - 検索: title, completed_comment
     - ソート: created_at降順
+
+    注意:
+    - 軽量のレコードに限りこのコードは有効です。
+    - 大量レコードの場合は別途専用検索エンジン（Elasticsearch, 
+      PostgreSQLのGIN indexなど）を使用する必要があります。
     """
 
     tasks = Task.objects.all().order_by('-created_at')
@@ -27,7 +33,7 @@ def task_list(request):
         tasks = tasks.filter(is_archived=(is_archived == 'true'))
 
     # 検索処理
-    query = request.GET.get('q')
+    query = request.GET.get('q', '').strip()
     if query:
         tasks = tasks.filter(
             Q(title__icontains=query) |
