@@ -18,3 +18,25 @@ class TaskForm(forms.ModelForm):
             'completed_comment', 
             'is_archived'
         ]
+
+
+class TaskSearchForm(forms.Form):
+    """
+    タスク検索フォーム。
+    DB保存はせず、入力値のバリデーションと型変換だけを担当。
+    """
+    
+    q = forms.CharField(
+        required=False,
+        label="検索キーワード",
+        max_length=200,
+        strip=True
+    )
+    is_completed = forms.NullBooleanField(
+        required=False,
+        label="完了状態"
+    )
+    is_archived = forms.NullBooleanField(
+        required=False,
+        label="アーカイブ済み"
+    )
