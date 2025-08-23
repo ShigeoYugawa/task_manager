@@ -33,7 +33,7 @@ def task_list(request: HttpRequest) -> HttpResponse:
     tasks = get_filtered_tasks(
         is_completed=is_completed,
         is_archived=is_archived,
-        query=query
+        q=query
     )
 
     return render(request, 'tasks/task_list.html', {

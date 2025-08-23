@@ -3,6 +3,7 @@
 from django import forms
 from .models import Task
 
+
 class TaskForm(forms.ModelForm):
     """
     タスク作成・編集用フォーム
@@ -12,12 +13,27 @@ class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
         fields = [
-            'title', 
-            'description', 
-            'is_completed', 
-            'completed_comment', 
-            'is_archived'
+            'title',
+            'description',
+            'is_completed',
+            'completed_comment',
+            'is_archived',
         ]
+
+
+def to_bool(value: str) -> bool:
+    """
+    TypedChoiceField 用の coerce 関数。
+    "true" -> True
+    "false" -> False
+    空文字や None は空選択時に empty_value が適用されるのでここでは扱わない
+    """
+    value_lower = str(value).lower()
+    if value_lower == "true":
+        return True
+    elif value_lower == "false":
+        return False
+    raise ValueError(f"Invalid boolean value: {value}")
 
 
 class TaskSearchForm(forms.Form):
@@ -25,18 +41,32 @@ class TaskSearchForm(forms.Form):
     タスク検索フォーム。
     DB保存はせず、入力値のバリデーションと型変換だけを担当。
     """
-    
+
     q = forms.CharField(
         required=False,
         label="検索キーワード",
         max_length=200,
-        strip=True
+        strip=True,
     )
-    is_completed = forms.NullBooleanField(
-        required=False,
-        label="完了状態"
+
+    BOOLEAN_CHOICES = (
+        ("", "---------"),
+        ("true", "はい"),
+        ("false", "いいえ"),
     )
-    is_archived = forms.NullBooleanField(
+
+    is_completed = forms.TypedChoiceField(
+        choices=BOOLEAN_CHOICES,
+        coerce=to_bool,
         required=False,
-        label="アーカイブ済み"
+        label="完了状態",
+        empty_value=None,  # 空選択時は None を返す
+    )
+
+    is_archived = forms.TypedChoiceField(
+        choices=BOOLEAN_CHOICES,
+        coerce=to_bool,
+        required=False,
+        label="アーカイブ済み",
+        empty_value=None,  # 同様に None
     )
