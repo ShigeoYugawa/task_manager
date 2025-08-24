@@ -35,9 +35,15 @@ class Task(models.Model):
     # タスクをアーカイブするかどうか。デフォルトは通常タスク
     is_archived = models.BooleanField(default=False)
 
+
     def __str__(self) -> str:
         """
         管理画面やシェルでタスクオブジェクトを表示した際の文字列
         タスクタイトルを返す
         """
         return self.title
+
+
+    class Meta:
+        verbose_name = "タスク"
+        verbose_name_plural = "タスク一覧"
