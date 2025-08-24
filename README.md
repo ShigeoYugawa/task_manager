@@ -4,11 +4,62 @@
 # Task Manager (PoC)
 
 本リポジトリは、Django 5.2 を用いたタスク管理アプリケーションの **Proof of Concept (PoC)** 実装です。
-小規模ながら、タスクの CRUD 操作、検索・フィルタ機能、管理画面対応まで網羅しており、今後の拡張や API 化のベースとして利用できます。
+小規模ながら、タスクの CRUD 操作、検索・フィルタ機能、管理画面対応まで網羅しています。
 
 ---
 
-## 主な機能
+## 前提条件
+
+このプロジェクトをセットアップ・実行するには、以下の環境が必要です。
+
+### 1. システム・Python関連
+
+- Python 3.12 がインストール済み
+  [公式サイト](https://www.python.org/downloads/) から入手可能
+- pip が利用可能
+- 仮想環境構築ツール `venv` が利用可能
+- Windows11/WSL/Ubuntu-24.04
+- VSCode
+
+### 2. Django関連
+
+* Django 5.2 がインストール済み
+
+  ```bash
+  pip install Django==5.2.5
+  ```
+
+### 3. gettext (i18n 用)
+
+Django の国際化機能を利用するには gettext が必要です。
+
+* macOS:
+
+  ```bash
+  brew install gettext
+  ```
+* Ubuntu / Debian:
+
+  ```bash
+  sudo apt install gettext
+  ```
+* Windows:
+
+  * [gettext for Windows](https://mlocati.github.io/articles/gettext-iconv-windows.html) からインストール
+  * 環境変数 PATH に追加
+
+### 4. 型チェック・テスト関連
+
+* mypy（型チェック）
+* pytest + pytest-django（ユニットテスト）
+
+  ```bash
+  pip install mypy pytest pytest-django django-stubs django-stubs-ext
+  ```
+
+---
+
+## 主な機能（現状）
 
 * タスク管理（CRUD）
 
@@ -23,7 +74,7 @@
   * 検索・フィルタ対応
 * ユニットテストでモデル・フォーム・ビュー・URL を網羅
 
-※ ユーザー管理は Django 標準認証を使用。現時点では多ユーザー対応の画面は PoC 段階。
+※ ユーザー管理は Django 標準認証を使用しており、現時点ではユーザーごとのタスク制御は未実装。
 
 ---
 
@@ -32,9 +83,10 @@
 * Python 3.12
 * Django 5.2
 * SQLite3 (開発環境用)
+* Bootstrap 5.3
 * pytest + pytest-django によるユニットテスト
-
-将来的には PostgreSQL や Docker/AWS 環境での運用を想定しています。
+* mypy による型チェック
+* gettext を使った国際化 (i18n) 用 `.po` / `.mo` ファイル
 
 ---
 
@@ -51,7 +103,7 @@ cd task_manager
 
 ```bash
 python -m venv .venv
-source .venv/bin/activate  # Windowsの場合: .venv\Scripts\activate
+source .venv/bin/activate
 ```
 
 ### 3. 依存パッケージのインストール
@@ -60,7 +112,28 @@ source .venv/bin/activate  # Windowsの場合: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### 4. マイグレーションの実行
+#### 依存パッケージ例（requirements.txt）
+
+```
+asgiref==3.9.1
+Django==5.2.5
+django-stubs==5.2.2
+django-stubs-ext==5.2.2
+iniconfig==2.1.0
+mypy==1.17.1
+mypy_extensions==1.1.0
+packaging==25.0
+pathspec==0.12.1
+pluggy==1.6.0
+Pygments==2.19.2
+pytest==8.4.1
+pytest-django==4.11.1
+sqlparse==0.5.3
+types-PyYAML==6.0.12.20250809
+typing_extensions==4.14.1
+```
+
+### 4. Django マイグレーションの実行
 
 ```bash
 python manage.py migrate
@@ -82,47 +155,134 @@ python manage.py runserver
 
 ---
 
-## ディレクトリ構成（概要）
+## mypy 型チェック
 
+`mypy.ini` または `setup.cfg` に以下を追加：
+
+```ini
+[mypy]
+python_version = 3.12
+warn_unused_configs = True
+ignore_missing_imports = True
+strict = True
+
+[mypy.plugins.django-stubs]
+django_settings_module = "task_manager.settings"
 ```
-task_manager/
-├── manage.py
-├── task_manager/       # プロジェクト設定
-├── tasks/              # タスク管理アプリ
-│   ├── admin.py        # 管理画面カスタマイズ
-│   ├── apps.py
-│   ├── forms.py        # タスク作成・検索フォーム
-│   ├── models.py       # タスクモデル
-│   ├── services.py     # ビジネスロジック（検索・フィルタ）
-│   ├── urls.py         # URLルーティング
-│   ├── views.py        # ユーザー画面用ビュー
-│   ├── templates/      # テンプレート
-│   │   └── tasks/
-│   │       ├── task_list.html
-│   │       ├── task_detail.html
-│   │       ├── task_form.html
-│   │       └── task_confirm_delete.html
-│   └── tests/          # ユニットテスト
-└── db.sqlite3          # 開発用データベース
+
+型チェック実行：
+
+```bash
+mypy tasks/
 ```
 
 ---
 
-## テストの実行
+## pytest 設定
 
-pytest でユニットテストを実行可能です：
+`pytest.ini` に Django 設定を指定：
+
+```ini
+[pytest]
+DJANGO_SETTINGS_MODULE = task_manager.settings
+python_files = tests.py test_*.py *_tests.py
+```
+
+テスト実行：
 
 ```bash
 pytest -v
 ```
 
-* モデル、フォーム、ビュー、URL のテストを網羅
-* CRUD 操作、検索・フィルタ機能の確認済み
+---
+
+## 国際化 (i18n) の導入
+
+1. メッセージファイル作成（例: 日本語）
+
+```bash
+django-admin makemessages -l ja
+```
+
+`locale/ja/LC_MESSAGES/django.po` が生成されます。翻訳文を記入後、コンパイル：
+
+```bash
+django-admin compilemessages
+```
+
+`django.mo` が生成され、Django が翻訳を反映します。
+
+2. 翻訳をテンプレートやコードで使用
+
+```python
+from django.utils.translation import gettext as _
+
+verbose_name = _("タスク")
+```
+
+テンプレートでは：
+
+```html
+{% load i18n %}
+<h1>{% trans "タスク一覧" %}</h1>
+```
+
+---
+
+## ディレクトリ構成（概要）
+
+```bash
+task_manager/
+├── README.md
+├── requirements.txt
+├── mypy.ini
+├── pytest.ini
+├── manage.py
+├── db.sqlite3
+├── locale/
+│   └── ja/LC_MESSAGES/
+│       ├── django.po
+│       └── django.mo
+├── task_manager/       # プロジェクト設定
+│   ├── asgi.py
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+├── accounts/           # ユーザー管理アプリ
+│   ├── admin.py
+│   ├── apps.py
+│   ├── forms.py
+│   ├── models.py
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+└── tasks/              # タスク管理アプリ
+    ├── admin.py
+    ├── apps.py
+    ├── forms.py
+    ├── models.py
+    ├── services.py
+    ├── urls.py
+    ├── views.py
+    ├── templates/
+    │   └── tasks/
+    │       ├── task_list.html
+    │       ├── task_detail.html
+    │       ├── task_form.html
+    │       └── task_confirm_delete.html
+    └── tests/
+        ├── test_forms.py
+        ├── test_models.py
+        ├── test_urls.py
+        ├── test_views.py
+        └── test_views_crud.py
+```
 
 ---
 
 ## 今後の展望
 
+* ユーザーごとのタスク管理
 * Django REST Framework による API 化
 * React などのフロントエンド分離構成
 * Docker 化、および AWS デプロイ
@@ -133,7 +293,7 @@ pytest -v
 ## ライセンス
 
 このプロジェクトは学習目的で作成した PoC です。
-ライセンスは設定していません（無断での再利用・配布はできません）。
+ライセンスは設定していません（無断での再利用・配布は不可）。
 
 ---
 
