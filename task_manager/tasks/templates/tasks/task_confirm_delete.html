@@ -13,19 +13,22 @@
     </style>
 </head>
 <body>
-<div class="container mt-5">
-    <h1 class="mb-4 text-danger">タスク削除確認</h1>
-    <div class="card border-danger">
-        <div class="card-body">
-            <p>「<strong>{{ task.title }}</strong>」を本当に削除しますか？</p>
-            <form method="post" class="d-inline">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-danger">削除</button>
-            </form>
-            <a href="{% url 'tasks:task_detail' task.pk %}" class="btn btn-outline-secondary">キャンセル</a>
-        </div>
-    </div>
-</div>
+    <main class="container mt-5">
+        <header class="mb-4">
+            <h1 class="text-danger">タスク削除確認</h1>
+        </header>
+
+        <article class="card border-danger">
+            <section class="card-body">
+                <p>「<strong>{{ task.title }}</strong>」を本当に削除しますか？</p>
+
+                <form method="post" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">削除</button>
+                </form>
+                <a href="{% url 'tasks:task_detail' task.pk %}" class="btn btn-outline-secondary">キャンセル</a>
+            </section>
+        </article>
+    </main>
 </body>
 </html>
-
