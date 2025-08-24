@@ -1,5 +1,6 @@
 # task_manager/accounts/views.py
 
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, redirect
@@ -58,3 +59,14 @@ def login_view(request: HttpRequest) -> HttpResponse:
         form = LoginForm()
     return render(request, "accounts/login.html", {"form": form})
 
+
+def home_view(request):
+    """
+    トップページ（FBV）
+
+    - 未ログイン：ログインページへ
+    - ログイン済み：タスク一覧へ
+    """
+    if request.user.is_authenticated:
+        return redirect("tasks:task_list")
+    return redirect("accounts:login")
