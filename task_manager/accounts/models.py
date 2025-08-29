@@ -66,6 +66,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         is_active (bool): Django標準のアクティブフラグ（メール認証前は False）
         is_staff (bool): Django管理画面アクセス用
         email_verified_at (datetime): メール認証完了日時
+
+    Default Fields:
+        password: パスワード（自動的に追加）
+        last_login: 最終アクセス日時（自動的に追加）
+        is_superuser: 特権ユーザー権限（自動的に追加）
     """
 
     email = models.EmailField(verbose_name="メールアドレス", unique=True)
@@ -90,8 +95,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     objects = CustomUserManager()
 
-    USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = []
+    USERNAME_FIELD = "email" # 必須
+    REQUIRED_FIELDS = [] # 必須
 
 
     def __str__(self) -> str:
