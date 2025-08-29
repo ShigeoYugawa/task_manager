@@ -8,7 +8,8 @@ from .models import CustomUser
 
 
 class CustomUserCreationForm(forms.ModelForm):
-    """ユーザー作成用フォーム。
+    """
+    ユーザー作成用フォーム。（管理画面表示で必須）
 
     Django 管理画面やカスタムビューから新しいユーザーを作成する際に利用される。
     2つのパスワード入力欄を持ち、両者が一致することを検証する。
@@ -60,14 +61,16 @@ class CustomUserCreationForm(forms.ModelForm):
             CustomUser: 作成されたユーザーオブジェクト
         """
         user = super().save(commit=False)
-        user.set_password(self.cleaned_data["password1"])  # ハッシュ化して保存
+        # パスワードハッシュ化は必ず set_password
+        user.set_password(self.cleaned_data["password1"])
         if commit:
             user.save()
         return user
 
 
 class CustomUserChangeForm(forms.ModelForm):
-    """ユーザー更新用フォーム。
+    """
+    ユーザー更新用フォーム。（管理画面表示で必須）
 
     管理画面からユーザー情報を編集する際に利用される。
     パスワードは変更不可で、ハッシュ化済み値を読み取り専用として表示する。
@@ -120,6 +123,7 @@ class SignUpForm(forms.ModelForm):
     def save(self, commit: bool = True) -> CustomUser:
         """ユーザー作成"""
         user = super().save(commit=False)
+        # パスワードハッシュ化は必ず set_password
         user.set_password(self.cleaned_data["password1"])
         if commit:
             user.save()
