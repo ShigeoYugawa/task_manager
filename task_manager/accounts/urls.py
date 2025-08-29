@@ -10,4 +10,6 @@ urlpatterns = [
     path("signup/", views.signup_view, name="signup"),
     # ログイン
     path("login/", views.login_view, name="login"),
+    # ログアウト
+    path("logout/", views.logout_view, name="logout"),
 ]

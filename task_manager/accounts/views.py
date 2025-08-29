@@ -1,7 +1,7 @@
 # task_manager/accounts/views.py
 
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, redirect
 from .forms import SignUpForm, LoginForm
@@ -58,6 +58,15 @@ def login_view(request: HttpRequest) -> HttpResponse:
     else:
         form = LoginForm()
     return render(request, "accounts/login.html", {"form": form})
+
+
+def logout_view(request: HttpRequest) -> HttpResponse:
+    """
+    ログアウトビュー
+    - ログアウト後はログイン画面にリダイレクト
+    """
+    logout(request)
+    return redirect("accounts:login")
 
 
 def home_view(request):
