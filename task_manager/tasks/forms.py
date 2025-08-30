@@ -21,8 +21,8 @@ class TaskForm(forms.ModelForm):
         ]
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
-            'description': forms.Textarea(attrs={'class': 'form-control'}),
-            'completed_comment': forms.Textarea(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 5}),
+            'completed_comment': forms.Textarea(attrs={'class': 'form-control', 'rows': 5}),
             'is_completed': forms.CheckboxInput(attrs={'class': 'form-check-input'}), # 明示的に CheckboxInput にする
             'is_archived': forms.CheckboxInput(attrs={'class': 'form-check-input'}), # 明示的に CheckboxInput にする
         }
