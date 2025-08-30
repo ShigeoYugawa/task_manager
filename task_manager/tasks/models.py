@@ -35,6 +35,9 @@ class Task(models.Model):
     # タスクをアーカイブするかどうか。デフォルトは通常タスク
     is_archived = models.BooleanField(verbose_name="タスクをアーカイブする", default=False)
 
+    # 親タスク
+    parent = models.ForeignKey("self", verbose_name="親タスク", on_delete=models.CASCADE, related_name="subtasks", null=True, blank=True)
+
 
     def __str__(self) -> str:
         """

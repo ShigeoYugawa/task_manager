@@ -1,5 +1,6 @@
 # task_manager/tasks/services.py
 
+from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.db.models.query import QuerySet
 from .models import Task
@@ -50,3 +51,24 @@ def get_filtered_tasks(
         tasks = tasks.filter(is_archived=is_archived)
 
     return tasks
+
+
+def complete_task(task: Task) -> Task:
+    """
+    子タスクがすべて完了していないと親タスクを完了できない。
+    """
+    if task.subtasks.filter(is_completed=False).exists():
+        raise ValidationError("子タスクが未完了です。親タスクを完了できません。")
+
+    task.is_completed = True
+    task.save(update_fields=["is_completed"])
+    return task
+
+
+def reopen_task(task: Task) -> Task:
+    """
+    タスクを未完了に戻す
+    """
+    task.is_completed = False
+    task.save(update_fields=["is_completed"])
+    return task

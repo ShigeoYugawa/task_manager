@@ -1,0 +1,50 @@
+@startuml
+title Task Manager Django Project Overview
+
+package "task_manager (Project)" {
+    [manage.py] 
+    [settings.py] 
+    [urls.py]
+
+    package "accounts (App)" {
+        [models.py] 
+        [forms.py] 
+        [views.py] 
+        [urls.py] 
+        [admin.py] 
+    }
+
+    package "tasks (App)" {
+        [models.py] 
+        [forms.py] 
+        [views.py] 
+        [urls.py] 
+        [admin.py] 
+    }
+
+    package "templates" {
+        [base.html] 
+        [accounts/*.html] 
+        [tasks/*.html] 
+    }
+
+    package "static" {
+        [css/*] 
+        [js/*] 
+    }
+}
+
+' 依存関係
+[urls.py] --> [accounts/urls.py]
+[urls.py] --> [tasks/urls.py]
+
+[accounts/views.py] --> [accounts/forms.py]
+[accounts/views.py] --> [accounts/models.py]
+
+[tasks/views.py] --> [tasks/forms.py]
+[tasks/views.py] --> [tasks/models.py]
+
+[templates/accounts/*.html] --> [accounts/views.py]
+[templates/tasks/*.html] --> [tasks/views.py]
+
+@enduml
