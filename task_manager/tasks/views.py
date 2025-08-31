@@ -2,10 +2,12 @@
 
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
+from django.core.exceptions import ValidationError
+from django.contrib import messages 
 from django.db.models import Q
 from .models import Task
 from .forms import TaskForm, TaskSearchForm
-from .services import get_filtered_tasks
+from .services import get_filtered_tasks, complete_task 
 
 
 def task_list(request: HttpRequest) -> HttpResponse:
@@ -56,7 +58,18 @@ def task_detail(request: HttpRequest, pk: int) -> HttpResponse:
         HttpResponse: タスク詳細ページのレスポンス
     """
     task = get_object_or_404(Task, pk=pk)
-    return render(request, 'tasks/task_detail.html', {'task': task})
+    subtasks = task.subtasks.all().order_by('-created_at')  # 子タスク一覧（作成日降順）
+    has_incomplete_subtasks = task.subtasks.filter(is_completed=False).exists()
+    
+    return render(
+        request,
+        'tasks/task_detail.html',
+        {
+            'task': task,
+            'subtasks': subtasks,
+            'has_incomplete_subtasks': has_incomplete_subtasks,  # ← 渡す
+        }
+    )
 
 
 def task_create(request: HttpRequest) -> HttpResponse:
@@ -126,3 +139,22 @@ def task_delete(request: HttpRequest, pk: int) -> HttpResponse:
         task.delete()
         return redirect('tasks:task_list')
     return render(request, 'tasks/task_confirm_delete.html', {'task': task})
+
+
+def task_complete(request: HttpRequest, pk: int) -> HttpResponse:
+    """
+    タスクを完了状態に変更する。
+    子タスクが未完了の場合はエラーを表示して詳細画面へ戻す。
+    """
+    task = get_object_or_404(Task, pk=pk)
+
+    if request.method == "POST":
+        try:
+            complete_task(task)
+            messages.success(request, "タスクを完了にしました。")
+        except ValidationError as e:
+            messages.error(request, f"完了できません: {e.message}")
+        return redirect("tasks:task_detail", pk=pk)
+
+    # POST 以外は詳細画面へ
+    return redirect("tasks:task_detail", pk=pk)

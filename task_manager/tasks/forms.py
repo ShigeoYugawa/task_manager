@@ -2,7 +2,8 @@
 
 from django import forms
 from .models import Task
-
+from django.core.exceptions import ValidationError
+from .services import complete_task
 
 class TaskForm(forms.ModelForm):
     """
@@ -41,6 +42,19 @@ def to_bool(value: str) -> bool:
     elif value_lower == "false":
         return False
     raise ValueError(f"Invalid boolean value: {value}")
+
+
+def clean(self):
+    cleaned_data = super().clean()
+    is_completed = cleaned_data.get("is_completed")
+    task_instance = self.instance
+
+    # 親タスクを完了しようとした場合、子タスクチェック
+    if is_completed and task_instance.pk:
+        if task_instance.subtasks.filter(is_completed=False).exists():
+            raise ValidationError("子タスクが未完了のため、親タスクを完了できません。")
+
+    return cleaned_data
 
 
 class TaskSearchForm(forms.Form):
