@@ -1,5 +1,6 @@
 # task_manager/tasks/views.py
 
+from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.exceptions import ValidationError
@@ -36,7 +37,7 @@ def task_list(request: HttpRequest) -> HttpResponse:
         is_completed=is_completed,
         is_archived=is_archived,
         q=query
-    ).filter(parent__isnull=True)
+    ).filter(parent__isnull=True, user=request.user) # ユーザーで絞る
 
     return render(request, "tasks/task_list.html", {
         "tasks": tasks,
@@ -75,7 +76,8 @@ def task_detail(request: HttpRequest, pk: int) -> HttpResponse:
     )
 
 
-def task_create(request: HttpRequest) -> HttpResponse:
+@login_required
+def task_create(request: HttpRequest, parent_pk: int | None = None) -> HttpResponse:
     """
     新規タスクを作成する。
 
@@ -88,14 +90,25 @@ def task_create(request: HttpRequest) -> HttpResponse:
     Returns:
         HttpResponse: タスク作成ページまたはリダイレクト先のレスポンス
     """
+    parent_task = None
+    if parent_pk:
+        parent_task = get_object_or_404(Task, pk=parent_pk, user=request.user)
+
     if request.method == 'POST':
         form = TaskForm(request.POST)
         if form.is_valid():
+            task = form.save(commit=False)
+            task.user = request.user  # ← ログインユーザーを紐づけ
+            if parent_task:
+                task.parent = parent_task            
             form.save()
+            if parent_task:
+                return redirect('tasks:task_detail', pk=parent_task.pk)            
             return redirect('tasks:task_list')
     else:
         form = TaskForm()
-    return render(request, 'tasks/task_form.html', {'form': form})
+        
+    return render(request, 'tasks/task_form.html', {'form': form, 'parent_task': parent_task})
 
 
 def task_update(request: HttpRequest, pk: int) -> HttpResponse:
@@ -112,7 +125,7 @@ def task_update(request: HttpRequest, pk: int) -> HttpResponse:
     Returns:
         HttpResponse: タスク編集ページまたはリダイレクト先のレスポンス
     """
-    task = get_object_or_404(Task, pk=pk)
+    task = get_object_or_404(Task, pk=pk, user=request.user)
     if request.method == 'POST':
         form = TaskForm(request.POST, instance=task)
         if form.is_valid():

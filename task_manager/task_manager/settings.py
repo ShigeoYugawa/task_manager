@@ -142,3 +142,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 AUTH_USER_MODEL = "accounts.CustomUser"
+
+
+SESSION_COOKIE_SECURE = False  # ローカル開発では False
+CSRF_COOKIE_SECURE = False     # ローカル開発では False

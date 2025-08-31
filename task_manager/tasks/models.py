@@ -1,5 +1,6 @@
 # tasks/models.py
 
+from django.conf import settings
 from django.db import models
 
 class Task(models.Model):
@@ -37,6 +38,16 @@ class Task(models.Model):
 
     # 親タスク
     parent = models.ForeignKey("self", verbose_name="親タスク", on_delete=models.CASCADE, related_name="subtasks", null=True, blank=True)
+
+    # ユーザーとの紐づけ
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,  # カスタムユーザーを参照
+        verbose_name="ユーザー",
+        on_delete=models.CASCADE,
+        related_name="tasks",
+        null=True,  # 一時的に必須でない
+        blank=True
+    )
 
 
     def __str__(self) -> str:
