@@ -31,16 +31,19 @@ def task_list(request: HttpRequest) -> HttpResponse:
         is_archived = None
         query = ""
 
-    # サービス関数で条件に合致するタスクを取得
+    # 条件に合致するタスクを取得し、親がないタスクのみに絞る
     tasks = get_filtered_tasks(
         is_completed=is_completed,
         is_archived=is_archived,
         q=query
-    )
+    ).filter(parent__isnull=True)
 
-    return render(request, 'tasks/task_list.html', {
-        'tasks': tasks,
-        'form': form,  # テンプレートでフォームを表示したい場合
+    return render(request, "tasks/task_list.html", {
+        "tasks": tasks,
+        "form": form,
+        "query": query,
+        "is_completed": form.data.get("is_completed"),
+        "is_archived": form.data.get("is_archived"),
     })
 
 
@@ -60,7 +63,7 @@ def task_detail(request: HttpRequest, pk: int) -> HttpResponse:
     task = get_object_or_404(Task, pk=pk)
     subtasks = task.subtasks.all().order_by('-created_at')  # 子タスク一覧（作成日降順）
     has_incomplete_subtasks = task.subtasks.filter(is_completed=False).exists()
-    
+
     return render(
         request,
         'tasks/task_detail.html',
