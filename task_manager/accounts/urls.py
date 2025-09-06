@@ -12,4 +12,6 @@ urlpatterns = [
     path("login/", views.login_view, name="login"),
     # ログアウト
     path("logout/", views.logout_view, name="logout"),
+    # アカウント編集
+    path("profile/edit/", views.profile_edit_view, name="profile_edit"),
 ]

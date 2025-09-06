@@ -1,0 +1,97 @@
+<!-- task_manager/tasks/templates/tasks_api/task_search_ajax_simple.html -->
+
+{% extends "base.html" %}
+
+{% block title %}タスク検索（簡素版 Ajax）{% endblock %}
+
+{% block content %}
+<h1>タスク検索（簡素版 Ajax）</h1>
+
+<form id="search-form" class="mb-3">
+    <div class="row g-2 align-items-center">
+        <div class="col-auto">
+            <label for="is_completed" class="col-form-label">完了状態:</label>
+        </div>
+        <div class="col-auto">
+            <select id="is_completed" name="is_completed" class="form-select">
+                <option value="">すべて</option>
+                <option value="true">完了</option>
+                <option value="false">未完了</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary">検索</button>
+        </div>
+    </div>
+</form>
+
+<h2>タスク一覧</h2>
+<table class="table table-bordered" id="task-table">
+    <thead class="table-light">
+        <tr>
+            <th>タイトル</th>
+            <th>作成日時</th>
+            <th>完了状態</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<h2>JSON出力</h2>
+<pre id="task-json" class="bg-light p-2"></pre>
+
+<script>
+// ページの要素がすべて読み込まれたら、この中の処理を実行
+$(function(){ 
+
+    // #search-form（検索フォーム）の送信イベントをキャッチ
+    $('#search-form').on('submit', function(e){
+
+        // フォーム送信をAjaxに置き換える（画面リロードを防止）
+        e.preventDefault();
+
+        // $(this) はここでは送信対象の <form> を指す
+        // .serialize() はフォーム内の入力値を key=value&key2=value2 の形に変換
+        const formData = $(this).serialize();   
+
+        // jQueryの $.get() でGETリクエスト送信。
+        // URLは Django の {% url %} で task_list_simple エンドポイントへ。
+        // 第2引数 formData がクエリパラメータとして付与される。
+        // 第3引数の function(data){...} がコールバック。
+        // → APIから返ってきたデータ（JSON）を受け取る。
+        $.get('{% url "tasks_api:task_list_simple" %}', formData, function(data){
+            
+            // #task-json 要素に、APIレスポンスのJSONを整形して文字列表示。
+            // JSON.stringify(obj, null, 2) でインデント2スペースの見やすいJSONに変換。
+            $('#task-json').text(JSON.stringify(data, null, 2));
+
+            // 表示用テーブル（#task-table）の <tbody> を取得。
+            // .empty() で前回の結果をクリアしてから新しく描画。
+            const tbody = $('#task-table tbody');
+            tbody.empty();
+
+            // APIのレスポンス（配列）をループ。
+            // is_completed が true なら「完了」、false なら「未完了」に変換。
+            // → ここで「true/false」を日本語に置き換えている。
+            data.forEach(function(task){
+                // ブール値を日本語に変換
+                const statusText = task.is_completed ? "完了" : "未完了";
+
+                // タスク1件分の行 (<tr>) をテンプレートリテラルで作成。
+                // task.title … タスクのタイトル
+                // task.created_at … 作成日時。もし空なら空文字
+                // statusText … 「完了」または「未完了」
+                // tbody.append(tr) でテーブルに追加。
+                const tr = `<tr>
+                    <td>${task.title}</td>
+                    <td>${task.created_at || ""}</td>
+                    <td>${statusText}</td>
+                </tr>`;
+                tbody.append(tr);
+            });
+        });
+    });
+});
+</script>
+{% endblock %}

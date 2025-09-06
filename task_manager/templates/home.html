@@ -1,0 +1,38 @@
+<!-- task_manager/templates/home.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<section>
+    <h1 class="mb-4">ホームメニュー</h1>
+
+    <article class="card mb-3">
+    <div class="card-body">
+        <h2 class="h5 mb-3">UI版メニュー</h2>
+        <ul class="list-group">
+        <li class="list-group-item">
+            <a href="{% url 'tasks:task_list' %}">タスク管理</a>
+        </li>
+        <li class="list-group-item">
+            <a href="{% url 'accounts:profile_edit' %}">アカウント編集</a>
+        </li>
+        </ul>
+    </div>
+    </article>
+
+    <article class="card">
+    <div class="card-body">
+        <h2 class="h5 mb-3">API版メニュー</h2>
+        <ul class="list-group">
+        <li class="list-group-item">
+            <a href="/api/tasks/">タスク管理API</a>
+        </li>
+        <li class="list-group-item">
+            <a href="/api/accounts/">アカウントAPI</a>
+        </li>
+        </ul>
+    </div>
+    </article>
+
+</section>
+{% endblock %}

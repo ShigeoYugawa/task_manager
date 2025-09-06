@@ -1,10 +1,11 @@
 # task_manager/accounts/views.py
 
+from django.contrib import messages 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, redirect
-from .forms import SignUpForm, LoginForm
+from .forms import SignUpForm, LoginForm, ProfileUpdateForm
 
 
 def signup_view(request: HttpRequest) -> HttpResponse:
@@ -53,7 +54,7 @@ def login_view(request: HttpRequest) -> HttpResponse:
             user = authenticate(request, email=email, password=password)
             if user is not None and user.is_active:
                 login(request, user)
-                return redirect("home")
+                return redirect("user_home")
             form.add_error(None, "認証に失敗しました")
     else:
         form = LoginForm()
@@ -79,3 +80,23 @@ def home_view(request):
     if request.user.is_authenticated:
         return redirect("tasks:task_list")
     return redirect("accounts:login")
+
+
+@login_required
+def profile_edit_view(request: HttpRequest) -> HttpResponse:
+    """
+    プロフィール編集ビュー
+    - 自分自身の情報のみ更新可能
+    - 権限関連フィールドはフォームに含めない
+    """
+    user = request.user
+    if request.method == "POST":
+        form = ProfileUpdateForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "プロフィールを更新しました。")
+            return redirect("user_home")
+    else:
+        form = ProfileUpdateForm(instance=user)
+
+    return render(request, "accounts/profile_edit.html", {"form": form})

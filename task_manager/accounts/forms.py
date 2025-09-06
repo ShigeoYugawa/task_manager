@@ -137,3 +137,17 @@ class LoginForm(forms.Form):
     password = forms.CharField(
         label="パスワード", widget=forms.PasswordInput
     )
+
+
+class ProfileUpdateForm(forms.ModelForm):
+    """ユーザー自身のプロフィール編集フォーム"""
+
+    class Meta:
+        model = CustomUser
+        fields = ("email", "nickname", "first_name", "last_name")
+        widgets = {
+            "email": forms.EmailInput(attrs={"class": "form-control"}),
+            "nickname": forms.TextInput(attrs={"class": "form-control"}),
+            "first_name": forms.TextInput(attrs={"class": "form-control"}),
+            "last_name": forms.TextInput(attrs={"class": "form-control"}),
+        }
