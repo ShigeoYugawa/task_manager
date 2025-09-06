@@ -58,6 +58,12 @@ pip install mypy pytest pytest-django django-stubs django-stubs-ext
 
   * Django 標準認証を利用
   * ユーザーごとのタスク表示・操作が可能
+* **API 機能（シンプル版）**
+
+  * Ajax を利用したクエリパラメータ検索に対応  
+  * 条件指定フォームからタスクを検索し、  
+    - テーブル形式で整形表示  
+    - JSON レスポンスを整形して表示
 * ユニットテストでモデル・フォーム・ビュー・URL を網羅
 
 ---
