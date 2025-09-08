@@ -1,5 +1,6 @@
 <!-- task_manager/templates/base.html -->
 
+{% load static %}
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -30,6 +31,7 @@
     </style>
     {# Ajaxを実行するには読み込み順を考慮してhead側でjQueryを指定しておく必要がある。 #}
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="{% static 'js/hello.js' %}"></script>
 </head>
 <body>
 <header class="bg-light border-bottom mb-4">

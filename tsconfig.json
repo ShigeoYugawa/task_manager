@@ -1,0 +1,60 @@
+{
+  "compilerOptions": {
+    "rootDir": "./",                // tsconfig.json があるディレクトリを基準にする
+    "outDir": "../../static/js",    // ビルドした JS を Django の static/js に出力
+    "target": "es5",                // 古めのブラウザ互換を優先するなら es5
+    "module": "esnext",             // モジュールは最新仕様を使用
+    "strict": true,                 // 厳格モードを有効化（型安全のため推奨）
+    "sourceMap": true
+  },
+  "include": ["./**/*.ts"]          // assets/ts 配下の .ts ファイルを対象
+}
+
+
+/*
+{
+  // Visit https://aka.ms/tsconfig to read more about this file
+  "compilerOptions": {
+    // File Layout
+    // "rootDir": "./src",
+    // "outDir": "./dist",
+
+    // Environment Settings
+    // See also https://aka.ms/tsconfig/module
+    "module": "nodenext",
+    "target": "esnext",
+    "types": [],
+    // For nodejs:
+    // "lib": ["esnext"],
+    // "types": ["node"],
+    // and npm install -D @types/node
+
+    // Other Outputs
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+
+    // Stricter Typechecking Options
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+
+    // Style Options
+    // "noImplicitReturns": true,
+    // "noImplicitOverride": true,
+    // "noUnusedLocals": true,
+    // "noUnusedParameters": true,
+    // "noFallthroughCasesInSwitch": true,
+    // "noPropertyAccessFromIndexSignature": true,
+
+    // Recommended Options
+    "strict": true,
+    "jsx": "react-jsx",
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "noUncheckedSideEffectImports": true,
+    "moduleDetection": "force",
+    "skipLibCheck": true,
+  }
+}
+
+*/

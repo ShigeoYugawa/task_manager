@@ -1,16 +1,16 @@
 
+---
+
 # Task Manager (PoC)
 
 本リポジトリは、Django 5.2 を用いたタスク管理アプリケーションの **Proof of Concept (PoC)** 実装です。
-小規模ながら、タスクの CRUD 操作、検索・フィルタ機能、管理画面対応、親子タスク構造までを網羅しています。
+タスクの CRUD 操作、検索・フィルタ機能、親子タスク構造、管理画面対応までを網羅しています。
 
 ---
 
 ## 前提条件
 
-* Python 3.12
-* pip
-* 仮想環境構築ツール `venv`
+* Python 3.12, pip, venv
 * Windows11 / WSL / Ubuntu 24.04
 * VSCode
 
@@ -18,7 +18,7 @@
 
 ```bash
 pip install Django==5.2.5
-````
+```
 
 ### 型チェック・テスト関連
 
@@ -34,37 +34,59 @@ pip install mypy pytest pytest-django django-stubs django-stubs-ext
 
 ---
 
-## 主な機能（現状）
+## 主な機能
 
-* タスク管理（CRUD）
+* **タスク管理（CRUD）**
 
   * タイトル、説明、作成日、更新日、完了状態、完了コメント、アーカイブ状態
   * 親子タスク構造を保持
-* タスク一覧画面
 
-  * **トップレベルタスクのみを表示**（子タスクは詳細ページで確認）
-  * 検索・フィルタ
+* **タスク一覧 / 詳細ページ**
 
-    * 完了状態・アーカイブ状態
-    * タイトル・完了コメント部分一致検索
-* タスク詳細ページ
+  * トップレベルタスクのみを一覧表示（子タスクは詳細ページで確認）
+  * 検索・フィルタ：完了状態、アーカイブ状態、タイトル・コメント部分一致
 
-  * 子タスク一覧を表示
-* Django 管理画面
+* **Django 管理画面**
 
   * 完了状態を「完了 / 未完了」で表示
   * 検索・フィルタ対応
-* ユーザー管理
 
-  * Django 標準認証を利用
+* **ユーザー管理**
+
+  * Django 標準認証
   * ユーザーごとのタスク表示・操作が可能
-* **API 機能（シンプル版）**
 
-  * Ajax を利用したクエリパラメータ検索に対応  
-  * 条件指定フォームからタスクを検索し、  
-    - テーブル形式で整形表示  
-    - JSON レスポンスを整形して表示
-* ユニットテストでモデル・フォーム・ビュー・URL を網羅
+* **API 機能（開発中）**
+
+  1. **条件指定フォーム連携ビュー**
+     フォーム入力 → 検索条件 → HTML テーブル + JSON 表示
+  2. **JSON 専用 API**
+     クライアント（Ajax / React / TypeScript）から直接利用可能
+
+  * 今後、認証・認可、Pagination、Filtering 等を追加予定
+
+* **ユニットテスト**
+
+  * モデル・フォーム・ビュー・URL を網羅
+
+---
+
+## TypeScript 環境（PoC）
+
+* `assets/ts/hello.ts` を作成
+* TypeScript → JavaScript へコンパイル
+
+  ```bash
+  tsc assets/ts/hello.ts --outDir static/js --sourceMap
+  ```
+* VSCode で `hello.js` をデバッグ可能（ブレークポイント利用）
+* 実行例：
+
+  ```bash
+  /usr/bin/node ./task_manager/static/js/hello.js
+  Hello, Alice!
+  Hello, Bob! You are a Engineer.
+  ```
 
 ---
 
@@ -75,46 +97,47 @@ pip install mypy pytest pytest-django django-stubs django-stubs-ext
 * SQLite3（開発環境用）
 * Bootstrap 5.3
 * pytest + pytest-django
-* mypy による型チェック
-* gettext を使った i18n
+* mypy 型チェック
+* gettext i18n
+* TypeScript（PoC）
 
 ---
 
 ## セットアップ手順
 
-### 1. リポジトリのクローン
+1. リポジトリのクローン
 
 ```bash
 git clone https://github.com/<your-username>/task_manager.git
 cd task_manager
 ```
 
-### 2. 仮想環境の作成と有効化
+2. 仮想環境の作成と有効化
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
 ```
 
-### 3. 依存パッケージのインストール
+3. 依存パッケージのインストール
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Django マイグレーション
+4. Django マイグレーション
 
 ```bash
 python manage.py migrate
 ```
 
-### 5. 管理ユーザー作成
+5. 管理ユーザー作成
 
 ```bash
 python manage.py createsuperuser
 ```
 
-### 6. 開発サーバー起動
+6. 開発サーバー起動
 
 ```bash
 python manage.py runserver
@@ -125,8 +148,6 @@ python manage.py runserver
 ---
 
 ## mypy 型チェック
-
-`mypy.ini` に設定済み:
 
 ```ini
 [mypy]
@@ -139,7 +160,7 @@ strict = True
 django_settings_module = "task_manager.settings"
 ```
 
-実行:
+実行例：
 
 ```bash
 mypy task_manager/tasks/
@@ -149,15 +170,13 @@ mypy task_manager/tasks/
 
 ## pytest 設定
 
-`pytest.ini`:
-
 ```ini
 [pytest]
 DJANGO_SETTINGS_MODULE = task_manager.settings
 python_files = tests.py test_*.py *_tests.py
 ```
 
-テスト実行:
+テスト実行：
 
 ```bash
 pytest -v
@@ -165,69 +184,39 @@ pytest -v
 
 ---
 
-## ディレクトリ構成（現状）
+## ディレクトリ構成（抜粋）
 
 ```bash
 .
 ├── README.md
-├── mypy.ini
-├── pytest.ini
 ├── requirements.txt
-└── task_manager/
-    ├── accounts/
-    │   ├── admin.py
-    │   ├── apps.py
-    │   ├── forms.py
-    │   ├── models.py
-    │   ├── urls.py
-    │   ├── views.py
-    │   ├── templates/accounts/
-    │   │   ├── login.html
-    │   │   └── signup.html
-    │   └── tests.py
-    ├── db.sqlite3
-    ├── locale/ja/LC_MESSAGES/
-    │   ├── django.mo
-    │   └── django.po
-    ├── manage.py
-    ├── task_manager/
-    │   ├── asgi.py
-    │   ├── settings.py
-    │   ├── urls.py
-    │   └── wsgi.py
-    ├── tasks/
-    │   ├── admin.py
-    │   ├── apps.py
-    │   ├── forms.py
-    │   ├── models.py
-    │   ├── services.py
-    │   ├── urls.py
-    │   ├── views.py
-    │   ├── templates/tasks/
-    │   │   ├── task_list.html
-    │   │   ├── task_detail.html
-    │   │   ├── task_form.html
-    │   │   └── task_confirm_delete.html
-    │   └── tests/
-    │       ├── test_forms.py
-    │       ├── test_models.py
-    │       ├── test_services.py
-    │       ├── test_urls.py
-    │       ├── test_views.py
-    │       └── test_views_crud.py
-    └── templates/base.html
-    └── uml/project_overview.puml
+├── manage.py
+├── assets/ts/hello.ts
+├── static/js/hello.js
+├── static/js/hello.js.map
+├── task_manager/
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+├── accounts/
+│   ├── views.py
+│   └── templates/accounts/login.html
+├── tasks/
+│   ├── models.py
+│   ├── views.py
+│   ├── services.py
+│   └── templates/tasks/task_list.html
+└── templates/base.html
 ```
 
 ---
 
 ## 今後の展望
 
-* Django REST Framework による API 化
-* React などのフロントエンド分離構成
+* フロント分離（React + TypeScript）との連携強化
+* API の機能拡張（認証・認可、Pagination、Filtering 等）
 * Docker 化、および AWS デプロイ
 * 権限管理・通知機能の追加
-* 高度な検索・フィルタ、ダッシュボード表示
 * 親子タスクのネスト構造の強化
 
 ---
@@ -235,5 +224,7 @@ pytest -v
 ## ライセンス
 
 学習目的の PoC。無断再利用・配布不可。
+
+---
 
 
